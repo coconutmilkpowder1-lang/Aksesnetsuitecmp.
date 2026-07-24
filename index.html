@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Akses NetSuite</title>
+
+<title>AksesNetSuiteCMP</title>
 
 <style>
+
 *{
     margin:0;
     padding:0;
@@ -18,159 +21,280 @@ body{
     padding:20px;
 }
 
+
 .container{
+
     width:100%;
     max-width:420px;
     margin:30px auto;
-    background:#fff;
+    background:white;
     padding:25px;
     border-radius:15px;
     box-shadow:0 10px 25px rgba(0,0,0,.15);
+
 }
 
+
 h2{
+
     text-align:center;
     color:#205081;
     margin-bottom:25px;
-    font-size:24px;
+
 }
+
 
 select{
+
     width:100%;
-    height:42px;
-    padding:0 12px;
-    font-size:15px;
-    color:#999;
-    border:1px solid #D5D9E2;
+    height:45px;
+    padding:10px;
     border-radius:8px;
-    background:#fff;
-    outline:none;
-    transition:.3s;
+    border:1px solid #ccc;
+    font-size:16px;
+
 }
 
-select:focus{
-    border-color:#205081;
-    box-shadow:0 0 6px rgba(32,80,129,.2);
-}
-
-option{
-    color:#000;
-}
 
 .menu{
+
     display:block;
-    text-decoration:none;
+    margin-top:15px;
+    padding:15px;
     background:#205081;
     color:white;
-    padding:16px;
-    margin-top:15px;
-    border-radius:10px;
     text-align:center;
-    font-size:17px;
+    text-decoration:none;
+    border-radius:10px;
     font-weight:bold;
-    transition:.3s;
+    font-size:16px;
+
 }
+
 
 .menu:hover{
+
     background:#3B82C4;
+
 }
 
-.dynamic{
-    display:none;
-}
 
-@media(max-width:600px){
-    body{
-        padding:15px;
-    }
-
-    .container{
-        padding:20px;
-    }
-
-    h2{
-        font-size:22px;
-    }
-
-    .menu{
-        font-size:16px;
-        padding:15px;
-    }
-
-    select{
-        font-size:16px;
-    }
-}
 </style>
 
 </head>
 
+
 <body>
+
 
 <div class="container">
 
-<h2>🔐 AKSES NETSUITE CMP</h2>
 
-<select id="formula" onchange="ubahMenu()">
-<option value="" selected disabled hidden>Pilih Formula / Item</option>
-<option value="CMP200">CMP 200</option>
-<option value="ND90">ND90</option>
+<h2>🔐 AksesNetSuiteCMP</h2>
+
+
+<select id="formula" onchange="tampil()">
+
+<option value="">Pilih Formula / Item</option>
+
 </select>
 
-<a id="inventory" class="menu dynamic" target="_blank"></a>
 
-<a id="transfer" class="menu dynamic" target="_blank"></a>
+<div id="menu"></div>
 
-<a class="menu"
-href="https://URL-CEK-ITEM"
-target="_blank">
-🔍 Cek Item
-</a>
-
-<a class="menu"
-href="https://URL-CEK-WO"
-target="_blank">
-📋 Cek WO
-</a>
 
 </div>
 
+
+
 <script>
 
-const data={
 
-CMP200:{
-nama:"CMP 200",
-inventory:"https://URL-INVENTORY-CMP200",
-transfer:"https://URL-TRANSFER-CMP200"
+// ===============================
+// DATA FORMULA
+// TAMBAH FORMULA DI SINI
+// ===============================
+
+
+const formula = {
+
+
+"CMP 200":{
+
+"📦 Inventory":
+"https://URL-INVENTORY-CMP200",
+
+"🔄 Transfer Inventory":
+"https://URL-TRANSFER-CMP200"
+
 },
 
-ND90:{
-nama:"ND90",
-inventory:"https://URL-INVENTORY-ND90",
-transfer:"https://URL-TRANSFER-ND90"
+
+
+"ND90":{
+
+"📦 Inventory":
+"https://URL-INVENTORY-ND90",
+
+"🔄 Transfer Inventory":
+"https://URL-TRANSFER-ND90"
+
+},
+
+
+
+"CREAM 500":{
+
+"📦 Inventory":
+"https://URL-INVENTORY-CREAM500",
+
+"🔄 Transfer Inventory":
+"https://URL-TRANSFER-CREAM500"
+
 }
+
 
 };
 
-function ubahMenu(){
 
-let f=document.getElementById("formula").value;
 
-document.getElementById("formula").style.color="#000";
 
-document.getElementById("inventory").style.display="block";
-document.getElementById("transfer").style.display="block";
+// ===============================
+// MENU TETAP
+// TAMBAH MENU UMUM DI SINI
+// ===============================
 
-document.getElementById("inventory").innerHTML="📦 Inventory "+data[f].nama;
-document.getElementById("inventory").href=data[f].inventory;
 
-document.getElementById("transfer").innerHTML="🔄 Transfer Inventory "+data[f].nama;
-document.getElementById("transfer").href=data[f].transfer;
+const menuTetap = {
+
+
+"🔍 Cek Item":
+"https://URL-CEK-ITEM",
+
+
+"📋 Cek WO":
+"https://URL-CEK-WO",
+
+
+"📑 Cek BOM":
+"https://URL-CEK-BOM",
+
+
+"📊 Report":
+"https://URL-REPORT"
+
+
+};
+
+
+
+
+
+// Membuat pilihan formula otomatis
+
+
+let pilih=document.getElementById("formula");
+
+
+for(let item in formula){
+
+
+let option=document.createElement("option");
+
+option.value=item;
+
+option.text=item;
+
+pilih.appendChild(option);
+
 
 }
 
+
+
+
+
+
+function tampil(){
+
+
+let nama=document.getElementById("formula").value;
+
+
+let area=document.getElementById("menu");
+
+
+area.innerHTML="";
+
+
+
+// tampil menu formula
+
+
+if(nama!=""){
+
+
+for(let x in formula[nama]){
+
+
+buatMenu(
+x,
+formula[nama][x]
+);
+
+
+}
+
+
+}
+
+
+// tampil menu tetap
+
+
+for(let x in menuTetap){
+
+
+buatMenu(
+x,
+menuTetap[x]
+);
+
+
+}
+
+
+
+}
+
+
+
+
+function buatMenu(judul,link){
+
+
+let a=document.createElement("a");
+
+
+a.className="menu";
+
+a.href=link;
+
+a.target="_blank";
+
+a.innerHTML=judul;
+
+
+document.getElementById("menu").appendChild(a);
+
+
+}
+
+
+
 </script>
 
+
 </body>
+
 </html>
